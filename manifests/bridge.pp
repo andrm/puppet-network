@@ -6,14 +6,13 @@ define network::bridge(
 ){
   require network::bridge-utils
 
-  network::interface{$interface:
+  Network::Interface <| title == $interface |> {
     network => '0.0.0.0',
     netmask => '0.0.0.0',
     ipaddress => '0.0.0.0',
     broadcast => '0.0.0.0',
     ensure => up,
     bridge => $name,
-    macaddress => $macaddress,
   }
   
   file { "/etc/sysconfig/network-scripts/ifcfg-$name":

@@ -8,6 +8,7 @@ define network::interface(
     $macaddress,
     $routes_file = "",
     $bridge = 'absent',
+		$mtu = '',
     $ensure
 ){
 

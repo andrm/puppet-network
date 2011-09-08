@@ -11,3 +11,6 @@ TYPE=Ethernet
 <% if bridge != 'absent' -%>
 BRIDGE=<%= bridge %>
 <% end -%>
+<% if mtu != '' -%>
+MTU=<%= mtu %>
+<% end -%>
