@@ -1,0 +1,21 @@
+VLAN=yes
+DEVICE=<%= name %>
+TYPE=Ethernet
+ONBOOT=yes
+BOOTPROTO=none
+IPV6INIT=no
+<% if ipaddress != 'absent' -%>
+IPADDR=<%= ipaddress %>
+<% end -%>
+<% if netmask != 'absent' -%>
+NETMASK=<%= netmask %>
+<% end -%>
+<% if network != 'absent' -%>
+NETWORK=<%= network %>
+<% end -%>
+<% if bridge != 'absent' -%>
+BRIDGE=<%= bridge %>
+<% end -%>
+<% if mtu != '' -%>
+MTU=<%= mtu %>
+<% end -%>
