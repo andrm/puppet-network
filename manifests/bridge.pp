@@ -1,11 +1,13 @@
 define network::bridge(
   $ensure = 'present',
-  $interface,
+  $interface = '',
+  $vlan = '',
   $bridge_ip = $ipaddress,
   $bridge_netmask = $netmask
 ){
   require network::bridge-utils
 
+ if $vlan == ''  {
   Network::Interface <| title == $interface |> {
     network => '0.0.0.0',
     netmask => '0.0.0.0',
@@ -14,7 +16,19 @@ define network::bridge(
     ensure => up,
     bridge => $name,
   }
-  
+ }
+ else {
+  #warning("In vlan: $name if: $interface")
+  Network::Vlan <| title == $interface |> {
+    network => '0.0.0.0',
+    netmask => '0.0.0.0',
+    ipaddress => '0.0.0.0',
+    broadcast => '0.0.0.0',
+    ensure => up,
+    bridge => $name,
+  }
+ }
+ 
   file { "/etc/sysconfig/network-scripts/ifcfg-$name":
     owner => root,
     group => root,
@@ -27,10 +41,20 @@ define network::bridge(
 
   case $ensure {
     present: {
-      exec { "/sbin/ifdown $name; /sbin/ifup $name":
-        subscribe => File["ifcfg-$name"],
-        refreshonly => true,
-        before => Network::Interface["$interface"],
+      if $vlan == ''  {
+        #warning("exec if: $name if: $interface")
+       exec { "/sbin/ifdown $name; /sbin/ifup $name":
+         subscribe => File["ifcfg-$name"],
+         refreshonly => true,
+         before => Network::Interface["$interface"],
+       }
+      } else {
+        #warning("exec vlan: $name if: $interface")
+       exec { "/sbin/ifdown $name; /sbin/ifup $name":
+         subscribe => File["ifcfg-$name"],
+         refreshonly => true,
+         before => Network::Vlan["$interface"],
+       }
       }
     }
     absent: {

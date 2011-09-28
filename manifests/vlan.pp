@@ -10,6 +10,8 @@ define network::vlan(
 ){
   require network::vlan-utils
 
+  #warning("In vlan if: $name $interface ensure: $ensure")
+
   Network::Interface <| title == $interface |> {
     network => '0.0.0.0',
     netmask => '0.0.0.0',
@@ -24,12 +26,13 @@ define network::vlan(
     mode => 600,
     content =>
       template("network/sysconfig/network-scripts/ifcfg.vlan.erb"),
-    ensure => $ensure,
+    ensure => present,
     alias => "ifcfg-$name"
   }
 
   case $ensure {
     present: {
+      #warning("In vlan if: exec: $name $interface")
       exec { "/sbin/ifdown $name; /sbin/ifup $name":
         subscribe => File["ifcfg-$name"],
         refreshonly => true,
